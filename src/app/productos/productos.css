@@ -1,0 +1,104 @@
+.productos-page {
+  background-color: #FFF9FA;
+  min-height: calc(100vh - 75px);
+}
+
+.text-choco {
+  color: #3e2723 !important;
+}
+
+.bg-pastel-pink {
+  background-color: #f8bbd0 !important;
+  color: #5c3a44 !important;
+  border: 1px solid #f48fb1;
+}
+
+/* Filtros */
+.btn-filter {
+  background-color: #ffffff;
+  border: 1px solid #f48fb1;
+  color: #724654;
+  border-radius: 50rem;
+  padding: 0.4rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-filter:hover,
+.btn-filter.active {
+  background-color: #f48fb1;
+  color: #ffffff;
+  border-color: #f48fb1;
+  box-shadow: 0 4px 10px rgba(244, 143, 177, 0.3);
+}
+
+/* Tarjetas */
+.product-card {
+  border-radius: 1.25rem !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #ffffff;
+  border: 1px solid #fce4ec !important;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 30px rgba(244, 143, 177, 0.2) !important;
+}
+
+.product-img {
+  height: 220px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-img {
+  transform: scale(1.04);
+}
+
+/* Botón Ordenar */
+.btn-order {
+  background-color: #f48fb1;
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-order:hover {
+  background-color: #ec407a;
+  color: #ffffff;
+}
+
+/* Banner de Pedido Especial */
+.custom-order-banner {
+  background: linear-gradient(135deg, #fde8ed 0%, #fff0f5 100%);
+  border: 1px dashed #f48fb1;
+}
+
+.btn-custom-order {
+  background-color: #5d4037;
+  color: #ffffff;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-custom-order:hover {
+  background-color: #3e2723;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.search-input-group {
+  border-color: #f8bbd0 !important;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.search-input-group:focus-within {
+  border-color: #f48fb1 !important;
+  box-shadow: 0 0 0 0.25rem rgba(244, 143, 177, 0.25) !important;
+}
+
+.search-input-group input:focus {
+  box-shadow: none;
+}

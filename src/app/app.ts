@@ -1,12 +1,15 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NavbarComponent } from './navbar/navbar';
+import { FooterComponent } from './footer/footer'; // <-- Aquí: FooterComponent en lugar de Footer
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.css',
+  standalone: true,
+  imports: [RouterOutlet, NavbarComponent, FooterComponent], // <-- Aquí también
   templateUrl: './app.html',
+  styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('my-rebanaditas');
+  title = 'my-rebanaditas';
 }

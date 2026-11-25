@@ -1,0 +1,16 @@
+<!-- es el carrusle q meustra los comentarios -->
+
+<div class="carrusel-item">
+
+    <!-- el for es para recorrer la lista d comentarios yse identifican por el id-->
+
+    @for (comentario of comentarios(); track comentario.id) {
+        <div class="card">
+            <div class="card-body text-center">
+
+                <!-- el texto del comentario -->
+                <p class="card-text">{{ comentario.body }}</p>
+            </div>
+        </div>
+    }
+</div>

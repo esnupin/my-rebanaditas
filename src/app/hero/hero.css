@@ -1,0 +1,206 @@
+/* margen de scroll para compensar el navbar fijo */
+#contacto-seccion {
+  scroll-margin-top: 95px;
+}
+
+/* Fondo general con degradado suave */
+.hero-rebanaditas {
+  background: linear-gradient(180deg, #fff0f5 0%, #fff9fa 100%);
+  border-bottom: 1px solid #fce4ec !important;
+}
+
+/* Colores de texto temáticos */
+.hero-title {
+  color: #3e2723;
+}
+
+.hero-title-accent {
+  color: #ec407a;
+}
+
+.hero-text {
+  color: #6d4c41;
+}
+
+/* Badges */
+.hero-badge {
+  background-color: #f8bbd0 !important;
+  color: #5c3a44 !important;
+  border: 1px solid #f48fb1;
+}
+
+.hero-badge-secondary {
+  background-color: #f8bbd0;
+  color: #724654;
+  border: 1px solid #f8bbd0;
+  font-weight: 600;
+}
+
+/* Botones principales */
+.btn-hero-pink {
+  background-color: #f48fb1 !important;
+  border-color: #f48fb1 !important;
+  color: #ffffff !important;
+  transition: all 0.3s ease;
+}
+
+.btn-hero-pink:hover {
+  background-color: #ec407a !important;
+  border-color: #ec407a !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(236, 64, 122, 0.25) !important;
+}
+
+.btn-hero-outline {
+  border: 2px solid #6d4c41 !important;
+  color: #3e2723 !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-hero-outline:hover {
+  background-color: #6d4c41 !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+}
+
+/* Tarjetas de Especialidades Populares */
+.popular-card {
+  background-color: #ffffff;
+  border: 1px solid #fce4ec !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.popular-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 22px rgba(244, 143, 177, 0.2) !important;
+}
+
+.popular-card-img {
+  height: 190px;
+  object-fit: cover;
+}
+
+.btn-card-pink {
+  background-color: #f8bbd0;
+  color: #5c3a44;
+  font-weight: 600;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-card-pink:hover {
+  background-color: #f48fb1;
+  color: #ffffff;
+}
+
+/* Imagen Hero principal */
+.hero-img {
+  max-height: 400px;
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.hero-img:hover {
+  transform: scale(1.02);
+}
+
+/* Contenedor del mapa */
+.map-card {
+  border-color: #f8bbd0 !important;
+  box-shadow: 0 8px 20px rgba(244, 143, 177, 0.15) !important;
+}
+
+.min-vh-75 {
+  min-height: 70vh;
+}
+
+/* Badge temático para novedades */
+.hero-badge-new {
+  background-color: #fce4ec;
+  color: #ad1457;
+  border: 1px solid #f8bbd0;
+  font-weight: 600;
+}
+
+.bg-new-pill {
+  background-color: #ec407a;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+}
+
+/* Tira horizontal deslizable */
+.tira-deslizable {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ocultar barra de desplazamiento fea pero permitir scroll */
+.tira-deslizable::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tira-deslizable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tira-deslizable::-webkit-scrollbar-thumb {
+  background: #f4a6b8;
+  border-radius: 10px;
+}
+
+/* Ancho fijo para cada tarjeta dentro de la tira */
+.tarjeta-tira {
+  width: 280px;
+  scroll-snap-align: start;
+}
+
+/* Tarjeta compacta para que solo luzca el texto del comentario */
+.card-comentario-mini {
+  width: 280px;
+  min-height: 100px;
+  max-height: 100px;
+  padding: 12px 16px !important;
+}
+
+/* Limita el texto a 3 renglones para que no se desborde */
+.text-truncate-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Desvanecido en los costados */
+.carrusel-fluido-wrapper {
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+/* Tira con animación lenta y suave (55s) */
+.carrusel-fluido-track {
+  display: flex;
+  width: max-content;
+  animation: desplazarLento 55s linear infinite;
+}
+
+/* Se pausa al pasar el mouse */
+.carrusel-fluido-wrapper:hover .carrusel-fluido-track {
+  animation-play-state: paused;
+}
+
+@keyframes desplazarLento {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}

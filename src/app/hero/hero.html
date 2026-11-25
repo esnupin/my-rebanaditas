@@ -1,0 +1,328 @@
+<section class="hero-rebanaditas py-5 border-bottom">
+  <div class="container">
+    
+    <!-- fila 1: contiene la presentación principal de la repostería con texto e imagen -->
+    <div class="row align-items-center min-vh-75">
+      <div class="col-lg-6 text-center text-lg-start">
+      
+        <h1 class="display-3 fw-bold hero-title mb-3">
+          El toque dulce que <span class="hero-title-accent">alegra tu día</span>
+        </h1>
+
+        <p class="lead hero-text mb-4">
+          En <strong>Rebanaditas</strong> horneamos momentos inolvidables. Disfruta de nuestras recetas tradicionales en porciones individuales o pasteles completos, elaborados al día con ingredientes de la mejor calidad.
+        </p>
+
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+
+          <a routerLink="/productos" class="btn btn-hero-pink btn-lg px-4 fw-bold shadow-sm rounded-pill">
+            Ver Productos
+          </a>
+
+          <a href="#contacto-seccion" (click)="irAContacto($event)" class="btn btn-hero-outline btn-lg px-4 rounded-pill">
+            Hacer Pedido
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-6 text-center mt-5 mt-lg-0">
+        <div class="hero-img-wrapper position-relative d-inline-block">
+          <img
+            src="imag/pastel-fresa-mora.png"
+            alt="Rebanada de pastel de fresa con mora"
+            class="img-fluid rounded-4 shadow-lg hero-img"
+          >
+        </div>
+      </div>
+    </div>
+
+    <hr>
+    
+    <!-- fila 2: especialidades favoritas -->
+    <div class="popular-section my-5 pt-4 position-relative">
+      
+      <div class="text-center mb-4">
+        <h2 class="fw-bold hero-title fs-2 mb-1">Nuestras Especialidades Favoritas</h2>
+        <p class="hero-text small mb-0">Los más queridos por nuestros clientes.</p>
+      </div>
+
+      <!-- contenedor del carrusel donde se muestran los productos y sus flechas para desplazarse -->
+      <div class="position-px-container position-relative px-md-5">
+        <button
+          type="button"
+          class="btn btn-light shadow rounded-circle position-absolute start-0 top-50 translate-middle-y z-3 d-none d-md-flex align-items-center justify-content-center border"
+          style="width: 45px; height: 45px; margin-left: -10px;"
+          (click)="desplazar('izq')"
+          aria-label="Anterior"
+        >
+          ❮
+        </button>
+
+        @if (cargando()) {
+          <div class="text-center py-4">
+            <div class="spinner-border text-danger" role="status">
+              <span class="visually-hidden">Cargando donas...</span>
+            </div>
+          </div>
+        } @else {
+
+          <!-- contenedor horizontal donde se colocan las tarjetas de los productos -->
+          <!-- carruselEspecialidades permite que el archivo ts pueda controlar este carrusel -->
+          <div #carruselEspecialidades class="tira-deslizable d-flex gap-4 pb-3 px-2">
+
+            <!-- recorremos la lista de productos favoritos para mostrar cada uno en una tarjeta -->
+            <!-- track item.id sirve para identificar cada producto -->
+            @for (item of favoritos(); track item.id) {
+              <div class="tarjeta-tira flex-shrink-0">
+                <div class="card h-100 border-0 shadow-sm popular-card p-3 rounded-4 text-center">
+                  <img
+                    [src]="item.image"
+                    [alt]="item.name"
+                    class="card-img-top rounded-4 popular-card-img mb-3"
+                    style="height: 200px; object-fit: cover;"
+                  >
+
+                  <div class="card-body p-0 d-flex flex-column">
+
+                    <h5 class="fw-bold hero-title mb-1 fs-6">{{ item.name }}</h5>
+                    <p class="fw-bold text-danger fs-5 mb-2">{{ item.price | currency:'MXN':'symbol-narrow' }}</p>
+                    <a routerLink="/productos" class="btn btn-sm btn-card-pink rounded-pill mt-auto">Ver en Menú</a>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <button
+          type="button"
+          class="btn btn-light shadow rounded-circle position-absolute end-0 top-50 translate-middle-y z-3 d-none d-md-flex align-items-center justify-content-center border"
+          style="width: 45px; height: 45px; margin-right: -10px;"
+          (click)="desplazar('der')"
+          aria-label="Siguiente"
+        >
+          ❯
+        </button>
+
+      </div>
+    </div>
+
+
+    <!-- fila 3: muestra los productos más nuevos que se agregaron a la página -->
+    <div class="new-arrivals-section my-5 pt-2 position-relative">
+    
+      <div class="text-center mb-4">
+        <h2 class="fw-bold hero-title fs-2 mb-1">Lo Más Nuevo</h2>
+        <p class="hero-text small mb-0">Nuevas creaciones de temporada listas para deleitarte.</p>
+      </div>
+
+      <!-- contenedor del carrusel de productos nuevos -->
+      <div class="position-relative px-md-5">
+        
+        <button
+          type="button"
+          class="btn btn-light shadow rounded-circle position-absolute start-0 top-50 translate-middle-y z-3 d-none d-md-flex align-items-center justify-content-center border"
+          style="width: 45px; height: 45px; margin-left: -10px;"
+          (click)="desplazarNuevos('izq')"
+          aria-label="Anterior"
+        >
+          ❮
+        </button>
+
+        <!-- este contenedor tiene la referencia que se utiliza para mover el carrusel desde el ts -->
+        <div #carruselNuevos class="tira-deslizable d-flex gap-4 pb-3 px-2">
+
+          @for (nuevo of nuevos(); track nuevo.id) {
+            <div class="tarjeta-tira flex-shrink-0">
+              <div class="card h-100 border-0 shadow-sm popular-card p-3 rounded-4 text-center">
+                <div class="position-relative">
+
+                  <span class="badge bg-new-pill position-absolute top-0 end-0 m-2 px-2 py-1 small rounded-pill shadow-sm">
+                    Nuevo
+                  </span>
+
+                  <img
+                    [src]="nuevo.image"
+                    [alt]="nuevo.name"
+                    class="card-img-top rounded-4 popular-card-img mb-3"
+                    style="height: 200px; object-fit: cover;"
+                  >
+                </div>
+
+                <div class="card-body p-0 d-flex flex-column">
+
+                  <h5 class="fw-bold hero-title mb-1 fs-6">{{ nuevo.name }}</h5>
+                  <p class="fw-bold text-danger fs-5 mb-2">{{ nuevo.price | currency:'MXN':'symbol-narrow' }}</p>
+                  <a routerLink="/productos" class="btn btn-sm btn-card-pink rounded-pill mt-auto">Ver Detalles</a>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-light shadow rounded-circle position-absolute end-0 top-50 translate-middle-y z-3 d-none d-md-flex align-items-center justify-content-center border"
+          style="width: 45px; height: 45px; margin-right: -10px;"
+          (click)="desplazarNuevos('der')"
+          aria-label="Siguiente"
+        >
+          ❯
+        </button>
+
+      </div>
+    </div>
+
+
+    <!-- fila 4: sección donde se muestran las opiniones que dejaron los clientes -->
+    <div class="row my-5 pt-4 border-top">
+      <div class="col-12 text-center mb-3">
+        <h3 class="fw-bold hero-title fs-3">Opiniones de nuestros clientes.</h3>
+      </div>
+
+      @if (cargandoComentarios()) {
+        <div class="text-center py-3">
+
+          <div class="spinner-border spinner-border-sm text-danger" role="status">
+            <span class="visually-hidden">Cargando comentarios...</span>
+          </div>
+        </div>
+      } @else {
+
+        <div class="carrusel-fluido-wrapper overflow-hidden position-relative py-2">
+
+          <div class="carrusel-fluido-track d-flex gap-3">
+
+            @for (c of comentarios(); track c.id) {
+              <div class="card border-0 shadow-sm rounded-3 p-3 bg-white flex-shrink-0 card-comentario-mini d-flex align-items-center justify-content-center text-center">
+
+                <p class="hero-text text-muted mb-0 small text-truncate-3">"{{ c.body }}"</p>
+              </div>
+            }
+
+            @for (c of comentarios(); track 'dup-' + c.id) {
+              <div class="card border-0 shadow-sm rounded-3 p-3 bg-white flex-shrink-0 card-comentario-mini d-flex align-items-center justify-content-center text-center">
+
+                <p class="hero-text text-muted mb-0 small text-truncate-3">"{{ c.body }}"</p>
+              </div>
+            }
+          </div>
+
+        </div>
+      }
+    </div>
+
+    
+    <!-- fila 5: contiene el formulario para pedidos y el mapa con la ubicación del negocio -->
+    <div class="row mt-5 pt-4 border-top align-items-stretch" id="contacto-seccion">
+      <div class="col-12 text-center mb-4">
+        <h3 class="fw-bold hero-title fs-2">Nuestra Ubicación y Pedidos</h3>
+        <p class="hero-text small">Te esperamos en el centro de Cuitláhuac, Veracruz o envíanos un mensaje para tu pedido.</p>
+      </div>
+
+      <!-- columna del formulario de contacto -->
+      <div class="col-lg-6 order-lg-1 mb-4 mb-lg-0">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <h4 class="fw-bold hero-title mb-3">Envíanos un Mensaje</h4>
+
+          @if (mensajeEnviado) {
+            <div class="alert alert-success rounded-3 py-2 px-3 small fw-semibold mb-3" role="alert">
+              ¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.
+            </div>
+          }
+
+          <!-- formulario conectado con el FormGroup del archivo ts -->
+          <!-- al enviarlo se ejecuta el metodo envio() -->
+          <form [formGroup]="formulario" (ngSubmit)="envio()">
+          
+            <div class="mb-3">
+              <label class="form-label fw-semibold small hero-title" for="nombre">Nombre completo</label>
+              <input
+                id="nombre"
+                type="text"
+                class="form-control rounded-3"
+                placeholder="Ej. Ana Morales"
+                formControlName="nombre"
+                [class.is-invalid]="invalido('nombre')"
+              >
+
+              @if (invalido('nombre')) {
+                <div class="invalid-feedback">Escribe tu nombre (campo obligatorio).</div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold small hero-title" for="correo">Correo electrónico</label>
+              <input
+                id="correo"
+                type="email"
+                class="form-control rounded-3"
+                placeholder="nombre@ejemplo.com"
+                formControlName="correo"
+                [class.is-invalid]="invalido('correo')"
+              >
+              @if (invalido('correo')) {
+                <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold small hero-title" for="numeroTelefono">Número de teléfono</label>
+              <input
+                id="numeroTelefono"
+                type="tel"
+                class="form-control rounded-3"
+                placeholder="10 dígitos (ej. 2711234567)"
+                formControlName="numeroTelefono"
+                [class.is-invalid]="invalido('numeroTelefono')"
+              >
+
+              @if (invalido('numeroTelefono')) {
+                <div class="invalid-feedback">Ingresa un número válido de exactamente 10 dígitos.</div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold small hero-title" for="comentario">Comentario o pedido</label>
+              <textarea
+                id="comentario"
+                rows="3"
+                class="form-control rounded-3"
+                placeholder="Indícanos los sabores, porciones o fecha..."
+                formControlName="comentario"
+                [class.is-invalid]="invalido('comentario')"
+              ></textarea>
+
+              @if (invalido('comentario')) {
+                <div class="invalid-feedback">Escribe al menos 10 caracteres.</div>
+              }
+            </div>
+
+            <button type="submit" class="btn btn-hero-pink w-100 fw-bold rounded-pill py-2 shadow-sm">
+              Enviar mensaje
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- columna donde se muestra el mapa con la ubicación de la repostería -->
+      <div class="col-lg-6 order-lg-2">
+        <div class="map-card shadow-sm rounded-4 overflow-hidden border h-100" style="min-height: 420px;">
+
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15096.347318731553!2d-96.73179262297127!3d18.81432420958784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85c4e36399128f1d%3A0xe5e13d712fa9fa76!2sCuitl%C3%A1huac%2C%20Ver.!5e0!3m2!1ses-419!2smx!4v1700000000000!5m2!1ses-419!2smx"
+            width="100%"
+            height="100%"
+            style="border:0; min-height: 420px;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>

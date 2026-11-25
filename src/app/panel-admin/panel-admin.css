@@ -1,0 +1,102 @@
+.admin-wrapper {
+  background-color: #f7f3f5;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.admin-sidebar {
+  background-color: #2e1f1d;
+}
+
+.admin-avatar {
+  width: 60px;
+  height: 60px;
+  background-color: #fce4ec;
+  border: 2px solid #f8bbd0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+}
+
+.admin-nav-link {
+  color: #d7ccc8;
+  padding: 0.65rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.admin-nav-link:hover,
+.admin-nav-link.active {
+  background-color: rgba(244, 143, 177, 0.2);
+  color: #ff80ab;
+}
+
+/* Contenido Principal */
+.text-choco {
+  color: #3e2723;
+}
+
+.bg-choco {
+  background-color: #5d4037;
+}
+
+.bg-pink-primary {
+  background-color: #f48fb1;
+}
+
+.bg-pink-accent {
+  background-color: #ec407a;
+}
+
+.bg-pastel-pink {
+  background-color: #f8bbd0;
+}
+
+/* Tarjetas de Métricas con Degradados */
+.metric-card-1 {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.metric-card-2 {
+  background: linear-gradient(135deg, #7c93c3 0%, #5d7599 100%);
+}
+
+.metric-card-3 {
+  background: linear-gradient(135deg, #ba68c8 0%, #9c27b0 100%);
+}
+
+/* Gráfico Simulado de Barras */
+.chart-mockup {
+  height: 180px;
+  background-color: #fff9fa;
+  border: 1px dashed #f8bbd0;
+}
+
+.bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.bar {
+  width: 22px;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 6px;
+  transition: height 0.3s ease;
+}
+
+.bar-1 { height: 40px; background-color: #f8bbd0; }
+.bar-2 { height: 65px; background-color: #f48fb1; }
+.bar-3 { height: 50px; background-color: #f8bbd0; }
+.bar-4 { height: 80px; background-color: #ec407a; }
+.bar-5 { height: 110px; background-color: #ec407a; }
+.bar-6 { height: 135px; background-color: #d81b60; }
+.bar-7 { height: 120px; background-color: #ad1457; }

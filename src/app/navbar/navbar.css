@@ -1,0 +1,59 @@
+/* Barra de fondo café moka */
+.custom-navbar {
+  background-color: #2e1f1d !important;
+  border-bottom: 2px solid #f8bbd0;
+  padding: 0.5rem 1rem;
+}
+
+/* Imagen del logo */
+.brand-logo-img {
+  width: 50px !important;
+  height: 50px !important;
+  object-fit: cover;
+  border: 2px solid #f8bbd0;
+  display: inline-block;
+}
+
+/* Tipografía cursiva de repostería */
+.brand-text {
+  font-family: 'Pacifico', cursive;
+  font-size: 1.8rem;
+  color: #ff6584;
+  letter-spacing: 0.5px;
+}
+
+/* Enlaces del menú */
+.nav-link-custom {
+  color: #fce4ec !important;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.nav-link-custom:hover {
+  color: #f48fb1 !important;
+}
+
+.active-link {
+  color: #f48fb1 !important;
+  font-weight: 700;
+}
+
+/* Botón Iniciar Sesión */
+.btn-login {
+  background-color: #f48fb1;
+  color: #2e1f1d;
+  border: 1px solid #f48fb1;
+  transition: all 0.25s ease;
+}
+
+.btn-login:hover {
+  background-color: #ec407a;
+  border-color: #ec407a;
+  color: #ffffff;
+}
+
+/* Evita que la barra sticky tape la sección de contacto al bajar */
+:host ::ng-deep #contacto-seccion {
+  scroll-margin-top: 90px;
+}

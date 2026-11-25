@@ -1,0 +1,405 @@
+<div class="admin-wrapper container-fluid p-0 bg-light">
+  <div class="row g-0 min-vh-100">
+
+    <!-- Barra Lateral (Sidebar) -->
+    <aside class="col-12 col-md-3 col-xl-2 admin-sidebar p-3 text-center text-md-start">
+      
+      <!-- Este div hace que TODO el menú y los botones bajen contigo al hacer scroll -->
+      <div class="sticky-top pt-2" style="top: 15px; z-index: 10;">
+        
+        <div class="admin-profile py-3 text-center border-bottom border-secondary border-opacity-25">
+          <div class="admin-avatar mx-auto mb-2 shadow-sm">👩‍🍳</div>
+          <h5 class="fw-bold mb-0 text-white">Administrador</h5>
+          <span class="badge bg-pastel-pink text-dark rounded-pill mt-1">Rebanaditas Admin</span>
+        </div>
+
+        <nav class="nav flex-column gap-2 mt-3">
+          <button
+            type="button"
+            class="nav-link admin-nav-link text-start border-0 bg-transparent"
+            [class.active]="seccionActiva() === 'productos'"
+            (click)="cambiarSeccion('productos')"
+          >
+            🧁 Administrar Productos
+          </button>
+
+          <button
+            type="button"
+            class="nav-link admin-nav-link text-start border-0 bg-transparent"
+            [class.active]="seccionActiva() === 'usuarios'"
+            (click)="cambiarSeccion('usuarios')"
+          >
+            👥 Gestión de Usuarios
+          </button>
+
+          <button
+            type="button"
+            class="nav-link admin-nav-link text-start border-0 bg-transparent"
+            [class.active]="seccionActiva() === 'comentarios'"
+            (click)="cambiarSeccion('comentarios')"
+          >
+            💬 Comentarios Clientes
+          </button>
+
+          <button
+            type="button"
+            class="nav-link admin-nav-link text-start border-0 bg-transparent"
+            [class.active]="seccionActiva() === 'pedidos'"
+            (click)="cambiarSeccion('pedidos')"
+          >
+            📦 Pedidos y Control
+          </button>
+        </nav>
+
+        <!-- Botones de salir / volver que siempre te siguen al bajar -->
+        <div class="pt-3 mt-3 border-top border-secondary border-opacity-25 d-flex flex-column gap-2">
+          <a routerLink="/" class="btn btn-outline-light btn-sm w-100 rounded-pill">
+            ⬅ Volver a la Tienda
+          </a>
+          <button type="button" (click)="salirAdmin()" class="btn btn-danger btn-sm w-100 rounded-pill">
+            Cerrar Sesión
+          </button>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Área Principal -->
+    <main class="col-12 col-md-9 col-xl-10 p-4 p-lg-5">
+
+      @switch (seccionActiva()) {
+
+        <!-- ==================== VISTA 1: CRUD PRODUCTOS ==================== -->
+        @case ('productos') {
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Operaciones CRUD — Productos</h2>
+            <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-pill">
+              Total: {{ productos().length }}
+            </span>
+          </div>
+
+          @if (mensajeProducto()) {
+            <div class="alert alert-success py-2 px-3 small fw-semibold rounded-3">
+              {{ mensajeProducto() }}
+            </div>
+          }
+
+          <div class="row g-4 align-items-start">
+            <div class="col-12 col-lg-8">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                @if (cargandoProductos()) {
+                  <div class="text-center py-5">
+                    <div class="spinner-border text-danger" role="status"></div>
+                  </div>
+                } @else {
+                  <div class="table-responsive">
+                    <table class="table align-middle table-hover mb-0">
+                      <thead>
+                        <tr class="small text-muted border-bottom">
+                          <th>Imagen</th>
+                          <th>Título</th>
+                          <th>Categoría</th>
+                          <th>Precio</th>
+                          <th class="text-end">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (prod of productos(); track prod.id) {
+                          <tr>
+                            <td style="width: 65px;">
+                              <img
+                                [src]="prod.image"
+                                [alt]="prod.name"
+                                class="rounded-3 border object-fit-cover"
+                                style="width: 48px; height: 48px;"
+                              >
+                            </td>
+                            <td class="fw-semibold small">{{ prod.name }}</td>
+                            <td class="small text-muted">{{ prod.category }}</td>
+                            <td class="small fw-bold">{{ prod.price | currency:'MXN':'symbol-narrow' }}</td>
+                            <td class="text-end text-nowrap">
+                              <button
+                                type="button"
+                                class="btn btn-danger btn-sm me-2 rounded-2"
+                                (click)="borrarProducto(prod.id)"
+                              >
+                                Borrar
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-primary btn-sm rounded-2"
+                                (click)="prepararEditarProducto(prod)"
+                              >
+                                Actualizar
+                              </button>
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 20px; z-index: 5;">
+                <h4 class="fw-bold mb-3">
+                  {{ editandoProductoId() !== null ? 'Actualizar producto' : 'Nuevo producto' }}
+                </h4>
+
+                <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()">
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Título</label>
+                    <input type="text" class="form-control rounded-3" formControlName="name" placeholder="Ej. Dona de fresa">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Precio</label>
+                    <input type="number" class="form-control rounded-3" formControlName="price" placeholder="0">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Categoría</label>
+                    <select class="form-select rounded-3" formControlName="category">
+                      <option value="">Selecciona una categoría</option>
+                      <option value="dona">Dona</option>
+                      <option value="galletas">Galletas</option>
+                      <option value="pasteles">Pasteles</option>
+                      <option value="bebidas">Bebidas</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="form-label small fw-semibold">URL de la imagen</label>
+                    <input type="text" class="form-control rounded-3" formControlName="image" placeholder="https://...">
+                  </div>
+
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success fw-semibold rounded-3 py-2">
+                      {{ editandoProductoId() !== null ? 'Actualizar cambios' : 'Guardar' }}
+                    </button>
+                    @if (editandoProductoId() !== null) {
+                      <button type="button" class="btn btn-outline-secondary btn-sm rounded-3" (click)="cancelarEdicionProducto()">
+                        Cancelar edición
+                      </button>
+                    }
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ==================== VISTA 2: GESTIÓN DE USUARIOS ==================== -->
+        @case ('usuarios') {
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Gestión de Usuarios</h2>
+            <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-pill">
+              Total: {{ usuarios().length }}
+            </span>
+          </div>
+
+          @if (mensajeUsuario()) {
+            <div class="alert alert-success py-2 px-3 small fw-semibold rounded-3">
+              {{ mensajeUsuario() }}
+            </div>
+          }
+
+          <div class="row g-4 align-items-start">
+            <div class="col-12 col-lg-8">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                @if (cargandoUsuarios()) {
+                  <div class="text-center py-5">
+                    <div class="spinner-border text-danger" role="status"></div>
+                  </div>
+                } @else {
+                  <div class="table-responsive">
+                    <table class="table align-middle table-hover mb-0">
+                      <thead>
+                        <tr class="small text-muted border-bottom">
+                          <th>Nombre</th>
+                          <th>Usuario</th>
+                          <th>Correo</th>
+                          <th>Teléfono</th>
+                          <th class="text-end">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (u of usuarios(); track u.id) {
+                          <tr>
+                            <td class="fw-semibold small text-capitalize">{{ u.name.firstname }} {{ u.name.lastname }}</td>
+                            <td class="small text-muted">{{ u.username }}</td>
+                            <td class="small">{{ u.email }}</td>
+                            <td class="small">{{ u.phone }}</td>
+                            <td class="text-end text-nowrap">
+                              <button type="button" class="btn btn-danger btn-sm me-2 rounded-2" (click)="borrarUsuario(u.id)">
+                                Borrar
+                              </button>
+                              <button type="button" class="btn btn-primary btn-sm rounded-2" (click)="prepararEditarUsuario(u)">
+                                Editar
+                              </button>
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 20px; z-index: 5;">
+                <h4 class="fw-bold mb-3">
+                  {{ editandoUsuarioId() !== null ? 'Editar usuario' : 'Nuevo usuario' }}
+                </h4>
+                <form [formGroup]="usuarioForm" (ngSubmit)="guardarUsuario()">
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Nombre</label>
+                    <input type="text" class="form-control rounded-3" formControlName="firstname">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Apellido</label>
+                    <input type="text" class="form-control rounded-3" formControlName="lastname">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Usuario</label>
+                    <input type="text" class="form-control rounded-3" formControlName="username">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Correo</label>
+                    <input type="email" class="form-control rounded-3" formControlName="email">
+                  </div>
+                  <div class="mb-4">
+                    <label class="form-label small fw-semibold">Teléfono</label>
+                    <input type="text" class="form-control rounded-3" formControlName="phone">
+                  </div>
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success fw-semibold rounded-3 py-2">
+                      {{ editandoUsuarioId() !== null ? 'Actualizar usuario' : 'Guardar usuario' }}
+                    </button>
+                    @if (editandoUsuarioId() !== null) {
+                      <button type="button" class="btn btn-outline-secondary btn-sm rounded-3" (click)="cancelarEdicionUsuario()">
+                        Cancelar
+                      </button>
+                    }
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ==================== VISTA 3: COMENTARIOS DE CLIENTES ==================== -->
+        @case ('comentarios') {
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+              <h2 class="fw-bold mb-1">Revisión de Comentarios de Clientes</h2>
+              <p class="text-muted small mb-0">Mensajes y opiniones recibidos desde la API de comentarios</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <input
+                type="text"
+                class="form-control form-control-sm rounded-pill px-3"
+                placeholder="Buscar por correo o texto..."
+                [value]="filtroComentario()"
+                (input)="actualizarFiltroComentario($event)"
+              >
+              <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-pill">
+                {{ comentariosFiltrados().length }}
+              </span>
+            </div>
+          </div>
+
+          @if (mensajeComentario()) {
+            <div class="alert alert-success py-2 px-3 small fw-semibold rounded-3">
+              {{ mensajeComentario() }}
+            </div>
+          }
+
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            @if (cargandoComentarios()) {
+              <div class="text-center py-5">
+                <div class="spinner-border text-danger" role="status"></div>
+              </div>
+            } @else {
+              <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                  <thead>
+                    <tr class="small text-muted border-bottom">
+                      <th>ID</th>
+                      <th>Autor / Correo</th>
+                      <th>Comentario</th>
+                      <th class="text-end">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (c of comentariosFiltrados(); track c.id) {
+                      <tr>
+                        <td class="small fw-bold text-muted">#{{ c.id }}</td>
+                        <td class="small">
+                          <div class="fw-semibold">{{ c.name }}</div>
+                          <div class="text-muted">{{ c.email }}</div>
+                        </td>
+                        <td class="small">{{ c.comentario || c.body }}</td>
+                        <td class="text-end text-nowrap">
+                          <button
+                            type="button"
+                            class="btn btn-outline-danger btn-sm rounded-2"
+                            (click)="borrarComentario(c.id)"
+                          >
+                            Quitar
+                          </button>
+                        </td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="4" class="text-center text-muted py-4 small">
+                          No hay comentarios que coincidan con tu búsqueda.
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ==================== VISTA 4: PEDIDOS Y CONTROL ==================== -->
+        @case ('pedidos') {
+          <h2 class="fw-bold mb-4">Pedidos y Control</h2>
+          <div class="row g-4">
+            <div class="col-md-3">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <span class="text-muted small fw-bold">PRODUCTOS</span>
+                <h3 class="fw-bold mt-2 mb-0">{{ productos().length }}</h3>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <span class="text-muted small fw-bold">USUARIOS</span>
+                <h3 class="fw-bold mt-2 mb-0">{{ usuarios().length }}</h3>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <span class="text-muted small fw-bold">COMENTARIOS</span>
+                <h3 class="fw-bold mt-2 mb-0">{{ comentariosLista().length }}</h3>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <span class="text-muted small fw-bold">SUCURSAL</span>
+                <h3 class="fw-bold mt-2 mb-0 text-success fs-5">Cuitláhuac · Activa</h3>
+              </div>
+            </div>
+          </div>
+        }
+
+      }
+
+    </main>
+  </div>
+</div>

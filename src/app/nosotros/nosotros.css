@@ -1,0 +1,91 @@
+.nosotros-section {
+  background-color: #FFF9FA;
+  min-height: calc(100vh - 75px);
+}
+
+.text-choco {
+  color: #3e2723;
+}
+
+.badge-pastel {
+  background-color: #f8bbd0;
+  color: #5c3a44;
+  border: 1px solid #f48fb1;
+}
+
+.about-img {
+  max-height: 380px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 1.5rem;
+}
+
+/* Botones con estilo pastel */
+.btn-pastel-primary {
+  background-color: #f48fb1;
+  border: 1px solid #f48fb1;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.btn-pastel-primary:hover {
+  background-color: #ec407a;
+  border-color: #ec407a;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(236, 64, 122, 0.25);
+}
+
+.btn-pastel-outline {
+  border: 2px solid #f48fb1;
+  color: #724654;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.btn-pastel-outline:hover {
+  background-color: #fde8ed;
+  color: #3e2723;
+  transform: translateY(-2px);
+}
+
+/* Tarjetas de valores */
+.feature-card {
+  background-color: #ffffff;
+  border: 1px solid #fce4ec !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(244, 143, 177, 0.2) !important;
+}
+
+/* Imágenes pequeñas superiores */
+.card-thumb-img {
+  height: 150px;
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .card-thumb-img {
+  transform: scale(1.03);
+}
+
+/* Ícono circular flotante sobre la foto */
+.icon-circle {
+  width: 48px;
+  height: 48px;
+  background-color: #ffffff;
+  border: 2px solid #f8bbd0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  position: absolute;
+  bottom: -18px;
+  left: 20px;
+  z-index: 2;
+}

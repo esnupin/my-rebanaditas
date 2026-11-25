@@ -1,0 +1,66 @@
+/* src/app/footer/footer.css */
+.footer-globo {
+  background-color: #3b2327;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: relative !important; /* Asegura estar en su propia capa */
+  z-index: 100 !important;        /* Por encima de cualquier mapa o sección previa */
+}
+
+/* Títulos de sección */
+.footer-heading {
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  margin-bottom: 1.1rem;
+}
+
+/* Enlaces del menú */
+.footer-menu li {
+  margin-bottom: 0.45rem;
+}
+
+.footer-menu a {
+  color: #d7ccc8;
+  text-decoration: none;
+  font-size: 0.82rem;
+  cursor: pointer !important;
+  pointer-events: auto !important; /* Garantiza respuesta al click */
+  position: relative;
+  z-index: 101;
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+.footer-menu a:hover {
+  color: #ffffff !important;
+  text-decoration: underline;
+}
+
+/* Íconos sociales */
+.social-icons a {
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.social-icons a:hover {
+  opacity: 0.8;
+  transform: translateY(-2px);
+}
+
+/* Divisor y Copyright */
+.footer-divider {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.copyright-text {
+  color: #d7ccc8;
+  font-size: 0.78rem;
+  letter-spacing: 0.3px;
+}
