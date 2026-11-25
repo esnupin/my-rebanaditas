@@ -1,29 +1,23 @@
-import { Component, inject, signal } from '@angular/core';
-import { Comentarios as ComentarioServicio } from '../services/comentarios';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { ComentariosService } from '../services/comentarios';
 import { Comentario } from '../models/comentario.model';
 
 @Component({
-  imports: [],
   selector: 'app-comentarios',
-  styleUrl: './comentarios.css',
+  standalone: true,
+  imports: [],
   templateUrl: './comentarios.html',
+  styleUrl: './comentarios.css',
 })
-
-export class Comentarios {
-
+export class Comentarios implements OnInit {
   comentarios = signal<Comentario[]>([]);
-
-  private servicio = inject(ComentarioServicio)
+  private servicio = inject(ComentariosService);
 
   ngOnInit(): void {
-  
-    this.servicio.obtenerComentarios().subscribe(
-      {
-        next: (dato)=>{
-          this.comentarios.set(dato);
-          console.log(dato)
-        }
+    this.servicio.obtenerComentarios().subscribe({
+      next: (dato) => {
+        this.comentarios.set(dato);
       }
-    )
+    });
   }
 }

@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductosServices } from '../services/productos';
 import { Producto } from '../models/producto.model';
-import { Comentarios as ComentarioServicio } from '../services/comentarios';
+import { ComentariosService as ComentarioServicio } from '../services/comentarios';
 import { Comentario } from '../models/comentario.model';
 
 @Component({

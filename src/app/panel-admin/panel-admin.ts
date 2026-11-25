@@ -7,7 +7,7 @@ import { ProductosServices } from '../services/productos';
 import { Producto, ProductInput } from '../models/producto.model';
 import { UsuariosService } from '../services/usuarios';
 import { Usuario } from '../models/usuario.model';
-import { Comentarios } from '../services/comentarios';
+import { ComentariosService } from '../services/comentarios';
 import { Comentario } from '../models/comentario.model';
 
 type SeccionAdmin = 'productos' | 'usuarios' | 'comentarios' | 'pedidos';
@@ -24,7 +24,7 @@ export class PanelAdminComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly productosService = inject(ProductosServices);
   private readonly usuariosService = inject(UsuariosService);
-  private readonly comentariosService = inject(Comentarios);
+  private readonly comentariosService = inject(ComentariosService);
 
   seccionActiva = signal<SeccionAdmin>('productos');
 
@@ -271,7 +271,6 @@ export class PanelAdminComponent implements OnInit {
     this.cargandoComentarios.set(true);
     this.comentariosService.obtenerComentarios().subscribe({
       next: (data) => {
-        // Tomamos los primeros 25 para mantener ágil la revisión en el panel
         this.comentariosLista.set(data.slice(0, 25));
         this.cargandoComentarios.set(false);
       },
