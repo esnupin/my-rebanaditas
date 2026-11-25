@@ -32,7 +32,7 @@ export class AuthService {
   // Método para REGISTRAR un usuario nuevo localmente
   registrarUsuario(username: string, password: string): Observable<boolean> {
     const usuariosLocales = this.obtenerUsuariosLocales();
-    
+
     // Validar si ya existe
     const existe = usuariosLocales.some(u => u.username.toLowerCase() === username.toLowerCase().trim());
     if (existe) {
@@ -41,7 +41,7 @@ export class AuthService {
 
     usuariosLocales.push({ username: username.trim(), password });
     localStorage.setItem(this.localUsersKey, JSON.stringify(usuariosLocales));
-    
+
     return of(true);
   }
 
@@ -52,9 +52,10 @@ export class AuthService {
       u => u.username.toLowerCase() === username.toLowerCase().trim() && u.password === password
     );
 
-    // Si es un usuario que creaste tú localmente, lo logueamos directo simulando un token
+    // Si es un usuario registrado localmente, guardamos el payload en la segunda parte (índice 1)
     if (usuarioLocalEncontrado) {
-      const fakeToken = `fake.jwt.token.${btoa(JSON.stringify({ user: usuarioLocalEncontrado.username }))}`;
+      const payloadBase64 = btoa(JSON.stringify({ user: usuarioLocalEncontrado.username }));
+      const fakeToken = `local.${payloadBase64}.signature`;
       localStorage.setItem(this.storageKey, fakeToken);
       this.tokenSignal.set(fakeToken);
       return of({ token: fakeToken });
