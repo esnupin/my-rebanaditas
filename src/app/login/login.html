@@ -10,7 +10,6 @@
               🍰
             </div>
 
-            <!-- comprobamos si el usuario ya tiene una sesión iniciada -->
             @if (authService.isAuthenticated()) {
 
               <h2 class="fw-bold text-choco mb-1">¡Hola, {{ authService.username() }}!</h2>
@@ -30,7 +29,6 @@
             }
           </header>
 
-          <!-- Mensajes de alerta -->
           @if (mensajeError()) {
             <div class="alert alert-danger py-2 small text-center rounded-3 mb-3">
               {{ mensajeError() }}
@@ -43,7 +41,6 @@
             </div>
           }
 
-          <!-- Vista: Sesión activa -->
           @if (authService.isAuthenticated()) {
             <div class="text-center py-3">
 
@@ -55,7 +52,6 @@
                 }
               </div>
 
-              <!-- Botón exclusivo para el Admin que lo lleva al Panel -->
               @if (authService.isAdmin()) {
                 <a routerLink="/admin" class="btn btn-submit-pink w-100 py-2 rounded-pill fw-bold shadow-sm mb-3">
                   Ir al Panel de Administración
@@ -68,23 +64,22 @@
             </div>
           }
 
-          <!-- Vista: Formulario Login -->
           @else if (modo === 'login') {
             <form [formGroup]="loginForm" (ngSubmit)="iniciarSesion()">
 
               <div class="mb-3">
-                <label class="form-label fw-semibold text-choco small" for="usernameLogin">Usuario</label>
+                <label class="form-label fw-semibold text-choco small" for="usernameLogin">Usuario o Correo</label>
                 <input
                   id="usernameLogin"
                   type="text"
                   class="form-control input-custom"
-                  placeholder="Usuario"
+                  placeholder="Usuario o correo"
                   formControlName="username"
                   [class.is-invalid]="invalido('username', 'login')"
                 >
 
                 @if (invalido('username', 'login')) {
-                  <div class="invalid-feedback small">Ingresa tu nombre de usuario.</div>
+                  <div class="invalid-feedback small">Ingresa tu usuario o correo.</div>
                 }
               </div>
 
@@ -122,7 +117,6 @@
             </form>
           }
 
-          <!-- Vista: Formulario Registro -->
           @else {
             <form [formGroup]="registerForm" (ngSubmit)="registrar()">
 
@@ -139,6 +133,22 @@
 
                 @if (invalido('username', 'registro')) {
                   <div class="invalid-feedback small">Mínimo 3 caracteres.</div>
+                }
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold text-choco small" for="emailReg">Correo Electrónico</label>
+                <input
+                  id="emailReg"
+                  type="email"
+                  class="form-control input-custom"
+                  placeholder="correo@ejemplo.com"
+                  formControlName="email"
+                  [class.is-invalid]="invalido('email', 'registro')"
+                >
+
+                @if (invalido('email', 'registro')) {
+                  <div class="invalid-feedback small">Ingresa un correo electrónico válido.</div>
                 }
               </div>
 
@@ -180,4 +190,3 @@
     </div>
   </div>
 </section>
-

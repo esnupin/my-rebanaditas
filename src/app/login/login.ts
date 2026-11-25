@@ -1,13 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router'; // 👈 Agregamos RouterLink para el botón del HTML
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink], // 👈 Agregado en imports
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -29,6 +29,7 @@ export class LoginComponent {
 
   readonly registerForm = new FormGroup({
     username: new FormControl('', [Validators.required, Validators.minLength(3)]),
+    email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(4)])
   });
 
@@ -62,7 +63,6 @@ export class LoginComponent {
         this.loading.set(false);
         this.loginForm.reset();
         this.mensajeExito.set('¡Sesión iniciada correctamente!');
-        // Ya no redirige automáticamente: se queda aquí mostrando su rol y el botón al panel
       },
       error: () => {
         this.loading.set(false);
@@ -77,8 +77,8 @@ export class LoginComponent {
       return;
     }
 
-    const { username, password } = this.registerForm.getRawValue();
-    this.authService.registrarUsuario(username!, password!).subscribe({
+    const { username, email, password } = this.registerForm.getRawValue();
+    this.authService.registrarUsuario(username!, email!, password!).subscribe({
       next: () => {
         this.mensajeError.set('');
         this.mensajeExito.set('¡Cuenta creada con éxito! Ahora inicia sesión.');
@@ -86,8 +86,8 @@ export class LoginComponent {
 
         setTimeout(() => this.cambiarModo('login'), 1000);
       },
-      error: () => {
-        this.mensajeError.set('Ese nombre de usuario ya está registrado.');
+      error: (err) => {
+        this.mensajeError.set(err?.message || 'Ese nombre de usuario o correo ya está registrado.');
       }
     });
   }

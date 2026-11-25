@@ -8,5 +8,3 @@ export interface Producto {
 
 //Extraccion de las propiedades nefcesarias para crear un nuevo producto
 export type  ProductInput = Pick<Producto, 'name' | 'price' | 'category' | 'image' >;
-
-

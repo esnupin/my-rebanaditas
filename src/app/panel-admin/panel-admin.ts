@@ -33,6 +33,29 @@ export class PanelAdminComponent implements OnInit {
   cargandoProductos = signal<boolean>(false);
   editandoProductoId = signal<number | null>(null);
   mensajeProducto = signal<string>('');
+  errorProducto = signal<string>('');
+  filtroProducto = signal<string>('');
+  paginaProductos = signal<number>(1);
+  itemsPorPagina = 6;
+
+  productosFiltrados = computed(() => {
+    const termino = this.filtroProducto().trim().toLowerCase();
+    const lista = this.productos();
+    if (!termino) return lista;
+    return lista.filter(p =>
+      p.name.toLowerCase().includes(termino) ||
+      p.category.toLowerCase().includes(termino)
+    );
+  });
+
+  totalPaginasProductos = computed(() =>
+    Math.max(1, Math.ceil(this.productosFiltrados().length / this.itemsPorPagina))
+  );
+
+  productosPaginados = computed(() => {
+    const inicio = (this.paginaProductos() - 1) * this.itemsPorPagina;
+    return this.productosFiltrados().slice(inicio, inicio + this.itemsPorPagina);
+  });
 
   readonly productoForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
@@ -46,6 +69,30 @@ export class PanelAdminComponent implements OnInit {
   cargandoUsuarios = signal<boolean>(false);
   editandoUsuarioId = signal<number | null>(null);
   mensajeUsuario = signal<string>('');
+  errorUsuario = signal<string>('');
+  filtroUsuario = signal<string>('');
+  paginaUsuarios = signal<number>(1);
+
+  usuariosFiltrados = computed(() => {
+    const termino = this.filtroUsuario().trim().toLowerCase();
+    const lista = this.usuarios();
+    if (!termino) return lista;
+    return lista.filter(u =>
+      u.name.firstname.toLowerCase().includes(termino) ||
+      u.name.lastname.toLowerCase().includes(termino) ||
+      u.username.toLowerCase().includes(termino) ||
+      u.email.toLowerCase().includes(termino)
+    );
+  });
+
+  totalPaginasUsuarios = computed(() =>
+    Math.max(1, Math.ceil(this.usuariosFiltrados().length / this.itemsPorPagina))
+  );
+
+  usuariosPaginados = computed(() => {
+    const inicio = (this.paginaUsuarios() - 1) * this.itemsPorPagina;
+    return this.usuariosFiltrados().slice(inicio, inicio + this.itemsPorPagina);
+  });
 
   readonly usuarioForm = new FormGroup({
     firstname: new FormControl('', [Validators.required]),
@@ -60,6 +107,7 @@ export class PanelAdminComponent implements OnInit {
   cargandoComentarios = signal<boolean>(false);
   filtroComentario = signal<string>('');
   mensajeComentario = signal<string>('');
+  paginaComentarios = signal<number>(1);
 
   comentariosFiltrados = computed(() => {
     const termino = this.filtroComentario().trim().toLowerCase();
@@ -73,6 +121,15 @@ export class PanelAdminComponent implements OnInit {
     );
   });
 
+  totalPaginasComentarios = computed(() =>
+    Math.max(1, Math.ceil(this.comentariosFiltrados().length / this.itemsPorPagina))
+  );
+
+  comentariosPaginados = computed(() => {
+    const inicio = (this.paginaComentarios() - 1) * this.itemsPorPagina;
+    return this.comentariosFiltrados().slice(inicio, inicio + this.itemsPorPagina);
+  });
+
   ngOnInit(): void {
     this.cargarProductos();
     this.cargarUsuarios();
@@ -81,6 +138,24 @@ export class PanelAdminComponent implements OnInit {
 
   cambiarSeccion(seccion: SeccionAdmin): void {
     this.seccionActiva.set(seccion);
+  }
+
+  cambiarPaginaProductos(pagina: number): void {
+    if (pagina >= 1 && pagina <= this.totalPaginasProductos()) {
+      this.paginaProductos.set(pagina);
+    }
+  }
+
+  cambiarPaginaUsuarios(pagina: number): void {
+    if (pagina >= 1 && pagina <= this.totalPaginasUsuarios()) {
+      this.paginaUsuarios.set(pagina);
+    }
+  }
+
+  cambiarPaginaComentarios(pagina: number): void {
+    if (pagina >= 1 && pagina <= this.totalPaginasComentarios()) {
+      this.paginaComentarios.set(pagina);
+    }
   }
 
   // ==================== CRUD PRODUCTOS ====================
@@ -93,9 +168,16 @@ export class PanelAdminComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar productos:', err);
+        this.notificarErrorProducto('No se pudieron cargar los productos desde la API.');
         this.cargandoProductos.set(false);
       }
     });
+  }
+
+  actualizarFiltroProducto(evento: Event): void {
+    const valor = (evento.target as HTMLInputElement).value;
+    this.filtroProducto.set(valor);
+    this.paginaProductos.set(1);
   }
 
   guardarProducto(): void {
@@ -123,7 +205,10 @@ export class PanelAdminComponent implements OnInit {
           this.notificarProducto('Producto actualizado correctamente.');
           this.cancelarEdicionProducto();
         },
-        error: (err) => console.error('Error al actualizar:', err)
+        error: (err) => {
+          console.error('Error al actualizar:', err);
+          this.notificarErrorProducto('Error al actualizar el producto.');
+        }
       });
     } else {
       this.productosService.crearProducto(payload).subscribe({
@@ -136,7 +221,10 @@ export class PanelAdminComponent implements OnInit {
           this.notificarProducto('Producto creado con éxito.');
           this.productoForm.reset();
         },
-        error: (err) => console.error('Error al crear:', err)
+        error: (err) => {
+          console.error('Error al crear:', err);
+          this.notificarErrorProducto('Error al crear el producto.');
+        }
       });
     }
   }
@@ -157,18 +245,32 @@ export class PanelAdminComponent implements OnInit {
   }
 
   borrarProducto(id: number): void {
+    const confirmar = window.confirm('¿Estás seguro de que deseas eliminar este producto?');
+    if (!confirmar) return;
+
     this.productosService.eliminarProducto(id).subscribe({
       next: () => {
         this.productos.update(lista => lista.filter(p => p.id !== id));
-        this.notificarProducto('Producto eliminado.');
+        if (this.paginaProductos() > this.totalPaginasProductos()) {
+          this.paginaProductos.set(this.totalPaginasProductos());
+        }
+        this.notificarProducto('Producto eliminado correctamente.');
       },
-      error: (err) => console.error('Error al eliminar:', err)
+      error: (err) => {
+        console.error('Error al eliminar:', err);
+        this.notificarErrorProducto('No se pudo eliminar el producto.');
+      }
     });
   }
 
   private notificarProducto(msg: string): void {
     this.mensajeProducto.set(msg);
     setTimeout(() => this.mensajeProducto.set(''), 3500);
+  }
+
+  private notificarErrorProducto(msg: string): void {
+    this.errorProducto.set(msg);
+    setTimeout(() => this.errorProducto.set(''), 4000);
   }
 
   // ==================== CRUD USUARIOS ====================
@@ -181,9 +283,16 @@ export class PanelAdminComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar usuarios:', err);
+        this.notificarErrorUsuario('No se pudieron cargar los usuarios.');
         this.cargandoUsuarios.set(false);
       }
     });
+  }
+
+  actualizarFiltroUsuario(evento: Event): void {
+    const valor = (evento.target as HTMLInputElement).value;
+    this.filtroUsuario.set(valor);
+    this.paginaUsuarios.set(1);
   }
 
   guardarUsuario(): void {
@@ -211,10 +320,13 @@ export class PanelAdminComponent implements OnInit {
           this.usuarios.update(lista =>
             lista.map(u => (u.id === editId ? { ...u, ...baseData, name: baseData.name! } : u))
           );
-          this.notificarUsuario('Usuario actualizado.');
+          this.notificarUsuario('Usuario actualizado correctamente.');
           this.cancelarEdicionUsuario();
         },
-        error: (err) => console.error('Error al actualizar usuario:', err)
+        error: (err) => {
+          console.error('Error al actualizar usuario:', err);
+          this.notificarErrorUsuario('Error al actualizar el usuario.');
+        }
       });
     } else {
       this.usuariosService.crearUsuario(baseData).subscribe({
@@ -227,10 +339,13 @@ export class PanelAdminComponent implements OnInit {
             name: baseData.name!,
           };
           this.usuarios.update(lista => [nuevoUser, ...lista]);
-          this.notificarUsuario('Usuario registrado.');
+          this.notificarUsuario('Usuario registrado con éxito.');
           this.usuarioForm.reset();
         },
-        error: (err) => console.error('Error al crear usuario:', err)
+        error: (err) => {
+          console.error('Error al crear usuario:', err);
+          this.notificarErrorUsuario('Error al crear el usuario.');
+        }
       });
     }
   }
@@ -252,18 +367,32 @@ export class PanelAdminComponent implements OnInit {
   }
 
   borrarUsuario(id: number): void {
+    const confirmar = window.confirm('¿Estás seguro de que deseas eliminar este usuario?');
+    if (!confirmar) return;
+
     this.usuariosService.eliminarUsuario(id).subscribe({
       next: () => {
         this.usuarios.update(lista => lista.filter(u => u.id !== id));
-        this.notificarUsuario('Usuario eliminado.');
+        if (this.paginaUsuarios() > this.totalPaginasUsuarios()) {
+          this.paginaUsuarios.set(this.totalPaginasUsuarios());
+        }
+        this.notificarUsuario('Usuario eliminado correctamente.');
       },
-      error: (err) => console.error('Error al eliminar usuario:', err)
+      error: (err) => {
+        console.error('Error al eliminar usuario:', err);
+        this.notificarErrorUsuario('No se pudo eliminar el usuario.');
+      }
     });
   }
 
   private notificarUsuario(msg: string): void {
     this.mensajeUsuario.set(msg);
     setTimeout(() => this.mensajeUsuario.set(''), 3500);
+  }
+
+  private notificarErrorUsuario(msg: string): void {
+    this.errorUsuario.set(msg);
+    setTimeout(() => this.errorUsuario.set(''), 4000);
   }
 
   // ==================== REVISAR COMENTARIOS ====================
@@ -284,10 +413,17 @@ export class PanelAdminComponent implements OnInit {
   actualizarFiltroComentario(evento: Event): void {
     const valor = (evento.target as HTMLInputElement).value;
     this.filtroComentario.set(valor);
+    this.paginaComentarios.set(1);
   }
 
   borrarComentario(id: number): void {
+    const confirmar = window.confirm('¿Deseas quitar este comentario de la lista?');
+    if (!confirmar) return;
+
     this.comentariosLista.update(lista => lista.filter(c => c.id !== id));
+    if (this.paginaComentarios() > this.totalPaginasComentarios()) {
+      this.paginaComentarios.set(this.totalPaginasComentarios());
+    }
     this.mensajeComentario.set('Comentario retirado de la revisión.');
     setTimeout(() => this.mensajeComentario.set(''), 3000);
   }

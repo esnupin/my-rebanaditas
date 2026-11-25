@@ -1,10 +1,8 @@
 <div class="admin-wrapper container-fluid p-0 bg-light">
   <div class="row g-0 min-vh-100">
 
-    <!-- Barra Lateral (Sidebar) -->
     <aside class="col-12 col-md-3 col-xl-2 admin-sidebar p-3 text-center text-md-start">
       
-      <!-- Este div hace que TODO el menú y los botones bajen contigo al hacer scroll -->
       <div class="sticky-top pt-2" style="top: 15px; z-index: 10;">
         
         <div class="admin-profile py-3 text-center border-bottom border-secondary border-opacity-25">
@@ -51,7 +49,6 @@
           </button>
         </nav>
 
-        <!-- Botones de salir / volver que siempre te siguen al bajar -->
         <div class="pt-3 mt-3 border-top border-secondary border-opacity-25 d-flex flex-column gap-2">
           <a routerLink="/" class="btn btn-outline-light btn-sm w-100 rounded-pill">
             ⬅ Volver a la Tienda
@@ -64,23 +61,37 @@
       </div>
     </aside>
 
-    <!-- Área Principal -->
     <main class="col-12 col-md-9 col-xl-10 p-4 p-lg-5">
 
       @switch (seccionActiva()) {
 
         <!-- ==================== VISTA 1: CRUD PRODUCTOS ==================== -->
         @case ('productos') {
-          <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <h2 class="fw-bold mb-0">Operaciones CRUD — Productos</h2>
-            <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-pill">
-              Total: {{ productos().length }}
-            </span>
+            <div class="d-flex align-items-center gap-2">
+              <input
+                type="text"
+                class="form-control form-control-sm rounded-pill px-3"
+                placeholder="Buscar producto o categoría..."
+                [value]="filtroProducto()"
+                (input)="actualizarFiltroProducto($event)"
+              >
+              <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-pill">
+                Total: {{ productosFiltrados().length }}
+              </span>
+            </div>
           </div>
 
           @if (mensajeProducto()) {
             <div class="alert alert-success py-2 px-3 small fw-semibold rounded-3">
               {{ mensajeProducto() }}
+            </div>
+          }
+
+          @if (errorProducto()) {
+            <div class="alert alert-danger py-2 px-3 small fw-semibold rounded-3">
+              {{ errorProducto() }}
             </div>
           }
 
@@ -104,7 +115,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        @for (prod of productos(); track prod.id) {
+                        @for (prod of productosPaginados(); track prod.id) {
                           <tr>
                             <td style="width: 65px;">
                               <img
@@ -134,10 +145,42 @@
                               </button>
                             </td>
                           </tr>
+                        } @empty {
+                          <tr>
+                            <td colspan="5" class="text-center text-muted py-4 small">
+                              No se encontraron productos con ese criterio.
+                            </td>
+                          </tr>
                         }
                       </tbody>
                     </table>
                   </div>
+
+                  @if (totalPaginasProductos() > 1) {
+                    <nav class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                      <span class="small text-muted">
+                        Página {{ paginaProductos() }} de {{ totalPaginasProductos() }}
+                      </span>
+                      <div class="btn-group btn-group-sm">
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary"
+                          [disabled]="paginaProductos() === 1"
+                          (click)="cambiarPaginaProductos(paginaProductos() - 1)"
+                        >
+                          Anterior
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary"
+                          [disabled]="paginaProductos() === totalPaginasProductos()"
+                          (click)="cambiarPaginaProductos(paginaProductos() + 1)"
+                        >
+                          Siguiente
+                        </button>
+                      </div>
+                    </nav>
+                  }
                 }
               </div>
             </div>
@@ -193,16 +236,31 @@
 
         <!-- ==================== VISTA 2: GESTIÓN DE USUARIOS ==================== -->
         @case ('usuarios') {
-          <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <h2 class="fw-bold mb-0">Gestión de Usuarios</h2>
-            <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-pill">
-              Total: {{ usuarios().length }}
-            </span>
+            <div class="d-flex align-items-center gap-2">
+              <input
+                type="text"
+                class="form-control form-control-sm rounded-pill px-3"
+                placeholder="Buscar usuario o correo..."
+                [value]="filtroUsuario()"
+                (input)="actualizarFiltroUsuario($event)"
+              >
+              <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-pill">
+                Total: {{ usuariosFiltrados().length }}
+              </span>
+            </div>
           </div>
 
           @if (mensajeUsuario()) {
             <div class="alert alert-success py-2 px-3 small fw-semibold rounded-3">
               {{ mensajeUsuario() }}
+            </div>
+          }
+
+          @if (errorUsuario()) {
+            <div class="alert alert-danger py-2 px-3 small fw-semibold rounded-3">
+              {{ errorUsuario() }}
             </div>
           }
 
@@ -226,7 +284,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        @for (u of usuarios(); track u.id) {
+                        @for (u of usuariosPaginados(); track u.id) {
                           <tr>
                             <td class="fw-semibold small text-capitalize">{{ u.name.firstname }} {{ u.name.lastname }}</td>
                             <td class="small text-muted">{{ u.username }}</td>
@@ -241,10 +299,42 @@
                               </button>
                             </td>
                           </tr>
+                        } @empty {
+                          <tr>
+                            <td colspan="5" class="text-center text-muted py-4 small">
+                              No se encontraron usuarios con ese criterio.
+                            </td>
+                          </tr>
                         }
                       </tbody>
                     </table>
                   </div>
+
+                  @if (totalPaginasUsuarios() > 1) {
+                    <nav class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                      <span class="small text-muted">
+                        Página {{ paginaUsuarios() }} de {{ totalPaginasUsuarios() }}
+                      </span>
+                      <div class="btn-group btn-group-sm">
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary"
+                          [disabled]="paginaUsuarios() === 1"
+                          (click)="cambiarPaginaUsuarios(paginaUsuarios() - 1)"
+                        >
+                          Anterior
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary"
+                          [disabled]="paginaUsuarios() === totalPaginasUsuarios()"
+                          (click)="cambiarPaginaUsuarios(paginaUsuarios() + 1)"
+                        >
+                          Siguiente
+                        </button>
+                      </div>
+                    </nav>
+                  }
                 }
               </div>
             </div>
@@ -335,7 +425,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    @for (c of comentariosFiltrados(); track c.id) {
+                    @for (c of comentariosPaginados(); track c.id) {
                       <tr>
                         <td class="small fw-bold text-muted">#{{ c.id }}</td>
                         <td class="small">
@@ -363,6 +453,32 @@
                   </tbody>
                 </table>
               </div>
+
+              @if (totalPaginasComentarios() > 1) {
+                <nav class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                  <span class="small text-muted">
+                    Página {{ paginaComentarios() }} de {{ totalPaginasComentarios() }}
+                  </span>
+                  <div class="btn-group btn-group-sm">
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      [disabled]="paginaComentarios() === 1"
+                      (click)="cambiarPaginaComentarios(paginaComentarios() - 1)"
+                    >
+                      Anterior
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      [disabled]="paginaComentarios() === totalPaginasComentarios()"
+                      (click)="cambiarPaginaComentarios(paginaComentarios() + 1)"
+                    >
+                      Siguiente
+                    </button>
+                  </div>
+                </nav>
+              }
             }
           </div>
         }
