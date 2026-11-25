@@ -52,7 +52,7 @@ export class AuthService {
       u => u.username.toLowerCase() === username.toLowerCase().trim() && u.password === password
     );
 
-    // Si es un usuario registrado localmente, guardamos el payload en la segunda parte (índice 1)
+    // Payload en el índice 1 para que readUsername() lea el usuario local
     if (usuarioLocalEncontrado) {
       const payloadBase64 = btoa(JSON.stringify({ user: usuarioLocalEncontrado.username }));
       const fakeToken = `local.${payloadBase64}.signature`;

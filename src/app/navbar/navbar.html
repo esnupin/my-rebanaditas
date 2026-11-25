@@ -33,26 +33,31 @@
           </a>
         </li>
 
+        <!-- Enlace que lleva a la sección donde se presenta información del negocio -->
         <li class="nav-item">
           <a class="nav-link nav-link-custom" routerLink="/nosotros" routerLinkActive="active-link" (click)="cerrarMenu()">
             Nosotros
           </a>
         </li>
 
+        <!-- Enlace para entrar al apartado donde se muestran los productos -->
         <li class="nav-item">
           <a class="nav-link nav-link-custom" routerLink="/productos" routerLinkActive="active-link" (click)="cerrarMenu()">
             Productos
           </a>
         </li>
 
+        <!-- Este enlace lleva directamente a la sección de contacto de la página de inicio -->
         <li class="nav-item">
-          <a class="nav-link nav-link-custom" href="#contacto-seccion" (click)="irAContacto($event)">
+          <a class="nav-link nav-link-custom" routerLink="/" fragment="contacto-seccion" (click)="irAContacto($event)">
             Contáctanos
           </a>
         </li>
 
+        <!-- Esta sección cambia dependiendo de si el usuario inició sesión o no -->
         <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
           @if (authService.isAuthenticated()) {
+            <!-- Si ya hay una sesión iniciada, se muestra el nombre del usuario. -->
             <a
               routerLink="/login"
               class="badge bg-light text-dark fw-semibold px-3 py-2 rounded-pill border text-decoration-none shadow-sm"
@@ -62,6 +67,7 @@
               {{ authService.username() }}
             </a>
           } @else {
+            <!-- Si todavía no hay una sesión iniciada, se muestra el botón para iniciar sesión -->
             <a class="btn btn-login px-3 py-1 rounded-pill fw-semibold shadow-sm" routerLink="/login" (click)="cerrarMenu()">
               Iniciar Sesión
             </a>
