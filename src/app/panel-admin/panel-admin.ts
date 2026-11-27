@@ -1,7 +1,15 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { AuthService } from '../services/auth';
 import { ProductosServices } from '../services/productos';
 import { Producto, ProductInput } from '../models/producto.model';
@@ -11,6 +19,48 @@ import { ComentariosService } from '../services/comentarios';
 import { Comentario } from '../models/comentario.model';
 
 type SeccionAdmin = 'productos' | 'usuarios' | 'comentarios' | 'pedidos';
+
+// --- VALIDADORES PERSONALIZADOS ---
+function noSoloEspacios(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const val = control.value;
+    if (typeof val === 'string' && val.trim().length === 0) {
+      return { soloEspacios: true };
+    }
+    return null;
+  };
+}
+
+function numeroPositivo(minimo = 1): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const raw = control.value;
+    if (raw === null || raw === undefined || raw === '') return null;
+    const num = Number(raw);
+    if (Number.isNaN(num) || !Number.isFinite(num)) {
+      return { noNumero: true };
+    }
+    if (num < minimo) {
+      return { negativoOInvalido: true };
+    }
+    return null;
+  };
+}
+
+function urlImagenValida(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const val = (control.value ?? '').toString().trim();
+    if (!val) return null;
+    try {
+      const parsed = new URL(val);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        return null;
+      }
+      return { urlInvalida: true };
+    } catch {
+      return { urlInvalida: true };
+    }
+  };
+}
 
 @Component({
   selector: 'app-panel-admin',
@@ -58,10 +108,19 @@ export class PanelAdminComponent implements OnInit {
   });
 
   readonly productoForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    price: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
-    category: new FormControl('', [Validators.required]),
-    image: new FormControl('', [Validators.required]),
+    name: new FormControl('', [
+      Validators.required,
+      noSoloEspacios(),
+      Validators.minLength(2),
+      Validators.maxLength(80),
+    ]),
+    price: new FormControl<number | null>(null, [
+      Validators.required,
+      numeroPositivo(1),
+      Validators.max(1000000),
+    ]),
+    category: new FormControl('', [Validators.required, noSoloEspacios()]),
+    image: new FormControl('', [Validators.required, noSoloEspacios(), urlImagenValida()]),
   });
 
   // --- ESTADO USUARIOS ---
@@ -94,12 +153,43 @@ export class PanelAdminComponent implements OnInit {
     return this.usuariosFiltrados().slice(inicio, inicio + this.itemsPorPagina);
   });
 
+  private readonly soloLetrasRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
+  private readonly usernameRegex = /^[A-Za-z0-9._-]+$/;
+  private readonly telefonoRegex = /^\+?[0-9\s-]{7,15}$/;
+
   readonly usuarioForm = new FormGroup({
-    firstname: new FormControl('', [Validators.required]),
-    lastname: new FormControl('', [Validators.required]),
-    username: new FormControl('', [Validators.required]),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    phone: new FormControl('', [Validators.required]),
+    firstname: new FormControl('', [
+      Validators.required,
+      noSoloEspacios(),
+      Validators.minLength(2),
+      Validators.maxLength(40),
+      Validators.pattern(this.soloLetrasRegex),
+    ]),
+    lastname: new FormControl('', [
+      Validators.required,
+      noSoloEspacios(),
+      Validators.minLength(2),
+      Validators.maxLength(40),
+      Validators.pattern(this.soloLetrasRegex),
+    ]),
+    username: new FormControl('', [
+      Validators.required,
+      noSoloEspacios(),
+      Validators.minLength(3),
+      Validators.maxLength(25),
+      Validators.pattern(this.usernameRegex),
+    ]),
+    email: new FormControl('', [
+      Validators.required,
+      noSoloEspacios(),
+      Validators.email,
+      Validators.maxLength(100),
+    ]),
+    phone: new FormControl('', [
+      Validators.required,
+      noSoloEspacios(),
+      Validators.pattern(this.telefonoRegex),
+    ]),
   });
 
   // --- ESTADO COMENTARIOS DE CLIENTES ---
@@ -134,6 +224,11 @@ export class PanelAdminComponent implements OnInit {
     this.cargarProductos();
     this.cargarUsuarios();
     this.cargarComentarios();
+  }
+
+  campoInvalido(form: FormGroup, controlName: string): boolean {
+    const ctrl = form.get(controlName);
+    return !!(ctrl && ctrl.invalid && (ctrl.dirty || ctrl.touched));
   }
 
   cambiarSeccion(seccion: SeccionAdmin): void {
@@ -183,13 +278,22 @@ export class PanelAdminComponent implements OnInit {
   guardarProducto(): void {
     if (this.productoForm.invalid) {
       this.productoForm.markAllAsTouched();
+      this.notificarErrorProducto('Revisa los campos marcados en rojo antes de guardar.');
       return;
     }
 
     const raw = this.productoForm.getRawValue();
+    const precioLimpio = Number(raw.price);
+
+    if (Number.isNaN(precioLimpio) || precioLimpio < 1) {
+      this.productoForm.controls.price.setErrors({ negativoOInvalido: true });
+      this.productoForm.markAllAsTouched();
+      return;
+    }
+
     const payload: ProductInput = {
-      name: raw.name!.trim(),
-      price: Number(raw.price),
+      name: raw.name!.trim().replace(/\s+/g, ' '),
+      price: precioLimpio,
       category: raw.category!.trim(),
       image: raw.image!.trim(),
     };
@@ -197,6 +301,11 @@ export class PanelAdminComponent implements OnInit {
     const idEdit = this.editandoProductoId();
 
     if (idEdit !== null) {
+      const confirmarEdicion = window.confirm(
+        `¿Estás seguro de que de verdad quieres editar el producto "${payload.name}"?`
+      );
+      if (!confirmarEdicion) return;
+
       this.productosService.actualizarProducto(idEdit, payload).subscribe({
         next: () => {
           this.productos.update(lista =>
@@ -219,7 +328,7 @@ export class PanelAdminComponent implements OnInit {
           };
           this.productos.update(lista => [nuevoItem, ...lista]);
           this.notificarProducto('Producto creado con éxito.');
-          this.productoForm.reset();
+          this.productoForm.reset({ name: '', price: null, category: '', image: '' });
         },
         error: (err) => {
           console.error('Error al crear:', err);
@@ -237,11 +346,13 @@ export class PanelAdminComponent implements OnInit {
       category: prod.category,
       image: prod.image
     });
+    this.productoForm.markAsPristine();
+    this.productoForm.markAsUntouched();
   }
 
   cancelarEdicionProducto(): void {
     this.editandoProductoId.set(null);
-    this.productoForm.reset();
+    this.productoForm.reset({ name: '', price: null, category: '', image: '' });
   }
 
   borrarProducto(id: number): void {
@@ -298,6 +409,7 @@ export class PanelAdminComponent implements OnInit {
   guardarUsuario(): void {
     if (this.usuarioForm.invalid) {
       this.usuarioForm.markAllAsTouched();
+      this.notificarErrorUsuario('Revisa los campos marcados en rojo antes de guardar.');
       return;
     }
 
@@ -306,15 +418,21 @@ export class PanelAdminComponent implements OnInit {
 
     const baseData: Partial<Usuario> = {
       name: {
-        firstname: raw.firstname!.trim(),
-        lastname: raw.lastname!.trim(),
+        firstname: raw.firstname!.trim().replace(/\s+/g, ' '),
+        lastname: raw.lastname!.trim().replace(/\s+/g, ' '),
       },
       username: raw.username!.trim(),
-      email: raw.email!.trim(),
+      email: raw.email!.trim().toLowerCase(),
       phone: raw.phone!.trim(),
     };
 
     if (editId !== null) {
+      const nombreCompleto = `${baseData.name!.firstname} ${baseData.name!.lastname}`;
+      const confirmarEdicion = window.confirm(
+        `¿Estás seguro de que de verdad quieres actualizar al usuario "${nombreCompleto}"?`
+      );
+      if (!confirmarEdicion) return;
+
       this.usuariosService.actualizarUsuario(editId, baseData).subscribe({
         next: () => {
           this.usuarios.update(lista =>
@@ -340,7 +458,7 @@ export class PanelAdminComponent implements OnInit {
           };
           this.usuarios.update(lista => [nuevoUser, ...lista]);
           this.notificarUsuario('Usuario registrado con éxito.');
-          this.usuarioForm.reset();
+          this.usuarioForm.reset({ firstname: '', lastname: '', username: '', email: '', phone: '' });
         },
         error: (err) => {
           console.error('Error al crear usuario:', err);
@@ -359,11 +477,13 @@ export class PanelAdminComponent implements OnInit {
       email: user.email,
       phone: user.phone,
     });
+    this.usuarioForm.markAsPristine();
+    this.usuarioForm.markAsUntouched();
   }
 
   cancelarEdicionUsuario(): void {
     this.editandoUsuarioId.set(null);
-    this.usuarioForm.reset();
+    this.usuarioForm.reset({ firstname: '', lastname: '', username: '', email: '', phone: '' });
   }
 
   borrarUsuario(id: number): void {

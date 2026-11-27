@@ -191,31 +191,92 @@
                   {{ editandoProductoId() !== null ? 'Actualizar producto' : 'Nuevo producto' }}
                 </h4>
 
-                <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()">
+                <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()" novalidate>
                   <div class="mb-3">
                     <label class="form-label small fw-semibold">Título</label>
-                    <input type="text" class="form-control rounded-3" formControlName="name" placeholder="Ej. Dona de fresa">
+                    <input
+                      type="text"
+                      class="form-control rounded-3"
+                      [class.is-invalid]="campoInvalido(productoForm, 'name')"
+                      formControlName="name"
+                      placeholder="Ej. Dona de fresa"
+                    >
+                    @if (campoInvalido(productoForm, 'name')) {
+                      <div class="text-danger small mt-1 fw-semibold">
+                        @if (productoForm.controls.name.errors?.['required'] || productoForm.controls.name.errors?.['soloEspacios']) {
+                          El título es obligatorio.
+                        } @else if (productoForm.controls.name.errors?.['minlength']) {
+                          Debe tener al menos 2 caracteres.
+                        } @else if (productoForm.controls.name.errors?.['maxlength']) {
+                          Máximo 80 caracteres.
+                        }
+                      </div>
+                    }
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label small fw-semibold">Precio</label>
-                    <input type="number" class="form-control rounded-3" formControlName="price" placeholder="0">
+                    <input
+                      type="number"
+                      min="1"
+                      step="any"
+                      class="form-control rounded-3"
+                      [class.is-invalid]="campoInvalido(productoForm, 'price')"
+                      formControlName="price"
+                      placeholder="Ej. 35"
+                      (keydown)="$event.key === '-' || $event.key === 'e' || $event.key === 'E' ? $event.preventDefault() : null"
+                    >
+                    @if (campoInvalido(productoForm, 'price')) {
+                      <div class="text-danger small mt-1 fw-semibold">
+                        @if (productoForm.controls.price.errors?.['required']) {
+                          El precio es obligatorio.
+                        } @else if (productoForm.controls.price.errors?.['negativoOInvalido'] || productoForm.controls.price.errors?.['noNumero']) {
+                          Ingresa un precio válido mayor o igual a 1 (no se permiten negativos ni 0).
+                        } @else if (productoForm.controls.price.errors?.['max']) {
+                          El precio supera el máximo permitido.
+                        }
+                      </div>
+                    }
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label small fw-semibold">Categoría</label>
-                    <select class="form-select rounded-3" formControlName="category">
+                    <select
+                      class="form-select rounded-3"
+                      [class.is-invalid]="campoInvalido(productoForm, 'category')"
+                      formControlName="category"
+                    >
                       <option value="">Selecciona una categoría</option>
                       <option value="dona">Dona</option>
                       <option value="galletas">Galletas</option>
                       <option value="pasteles">Pasteles</option>
                       <option value="bebidas">Bebidas</option>
                     </select>
+                    @if (campoInvalido(productoForm, 'category')) {
+                      <div class="text-danger small mt-1 fw-semibold">
+                        Debes seleccionar una categoría válida.
+                      </div>
+                    }
                   </div>
 
                   <div class="mb-4">
                     <label class="form-label small fw-semibold">URL de la imagen</label>
-                    <input type="text" class="form-control rounded-3" formControlName="image" placeholder="https://...">
+                    <input
+                      type="text"
+                      class="form-control rounded-3"
+                      [class.is-invalid]="campoInvalido(productoForm, 'image')"
+                      formControlName="image"
+                      placeholder="https://..."
+                    >
+                    @if (campoInvalido(productoForm, 'image')) {
+                      <div class="text-danger small mt-1 fw-semibold">
+                        @if (productoForm.controls.image.errors?.['required'] || productoForm.controls.image.errors?.['soloEspacios']) {
+                          La URL de la imagen es obligatoria.
+                        } @else if (productoForm.controls.image.errors?.['urlInvalida']) {
+                          Ingresa una URL válida que empiece con http:// o https://.
+                        }
+                      </div>
+                    }
                   </div>
 
                   <div class="d-grid gap-2">
@@ -344,34 +405,115 @@
                 <h4 class="fw-bold mb-3">
                   {{ editandoUsuarioId() !== null ? 'Editar usuario' : 'Nuevo usuario' }}
                 </h4>
-                <form [formGroup]="usuarioForm" (ngSubmit)="guardarUsuario()">
+                <form [formGroup]="usuarioForm" (ngSubmit)="guardarUsuario()" novalidate>
                   <div class="mb-3">
                     <label class="form-label small fw-semibold">Nombre</label>
-                    <input type="text" class="form-control rounded-3" formControlName="firstname">
+                    <input
+                      type="text"
+                      class="form-control rounded-3"
+                      [class.is-invalid]="campoInvalido(usuarioForm, 'firstname')"
+                      formControlName="firstname"
+                    >
+                    @if (campoInvalido(usuarioForm, 'firstname')) {
+                      <div class="text-danger small mt-1 fw-semibold">
+                        @if (usuarioForm.controls.firstname.errors?.['required'] || usuarioForm.controls.firstname.errors?.['soloEspacios']) {
+                          El nombre es obligatorio.
+                        } @else if (usuarioForm.controls.firstname.errors?.['pattern']) {
+                          Solo se permiten letras sin números ni símbolos.
+                        } @else if (usuarioForm.controls.firstname.errors?.['minlength']) {
+                          Mínimo 2 caracteres.
+                        }
+                      </div>
+                    }
                   </div>
+
                   <div class="mb-3">
                     <label class="form-label small fw-semibold">Apellido</label>
-                    <input type="text" class="form-control rounded-3" formControlName="lastname">
+                    <input
+                      type="text"
+                      class="form-control rounded-3"
+                      [class.is-invalid]="campoInvalido(usuarioForm, 'lastname')"
+                      formControlName="lastname"
+                    >
+                    @if (campoInvalido(usuarioForm, 'lastname')) {
+                      <div class="text-danger small mt-1 fw-semibold">
+                        @if (usuarioForm.controls.lastname.errors?.['required'] || usuarioForm.controls.lastname.errors?.['soloEspacios']) {
+                          El apellido es obligatorio.
+                        } @else if (usuarioForm.controls.lastname.errors?.['pattern']) {
+                          Solo se permiten letras sin números ni símbolos.
+                        } @else if (usuarioForm.controls.lastname.errors?.['minlength']) {
+                          Mínimo 2 caracteres.
+                        }
+                      </div>
+                    }
                   </div>
+
                   <div class="mb-3">
                     <label class="form-label small fw-semibold">Usuario</label>
-                    <input type="text" class="form-control rounded-3" formControlName="username">
+                    <input
+                      type="text"
+                      class="form-control rounded-3"
+                      [class.is-invalid]="campoInvalido(usuarioForm, 'username')"
+                      formControlName="username"
+                    >
+                    @if (campoInvalido(usuarioForm, 'username')) {
+                      <div class="text-danger small mt-1 fw-semibold">
+                        @if (usuarioForm.controls.username.errors?.['required'] || usuarioForm.controls.username.errors?.['soloEspacios']) {
+                          El usuario es obligatorio.
+                        } @else if (usuarioForm.controls.username.errors?.['pattern']) {
+                          Sin espacios; usa solo letras, números, punto, guion o guion bajo.
+                        } @else if (usuarioForm.controls.username.errors?.['minlength']) {
+                          Mínimo 3 caracteres.
+                        }
+                      </div>
+                    }
                   </div>
+
                   <div class="mb-3">
                     <label class="form-label small fw-semibold">Correo</label>
-                    <input type="email" class="form-control rounded-3" formControlName="email">
+                    <input
+                      type="email"
+                      class="form-control rounded-3"
+                      [class.is-invalid]="campoInvalido(usuarioForm, 'email')"
+                      formControlName="email"
+                    >
+                    @if (campoInvalido(usuarioForm, 'email')) {
+                      <div class="text-danger small mt-1 fw-semibold">
+                        @if (usuarioForm.controls.email.errors?.['required'] || usuarioForm.controls.email.errors?.['soloEspacios']) {
+                          El correo es obligatorio.
+                        } @else if (usuarioForm.controls.email.errors?.['email']) {
+                          Ingresa un correo electrónico válido (ej. usuario@correo.com).
+                        }
+                      </div>
+                    }
                   </div>
+
                   <div class="mb-4">
                     <label class="form-label small fw-semibold">Teléfono</label>
-                    <input type="text" class="form-control rounded-3" formControlName="phone">
+                    <input
+                      type="text"
+                      class="form-control rounded-3"
+                      [class.is-invalid]="campoInvalido(usuarioForm, 'phone')"
+                      formControlName="phone"
+                    >
+                    @if (campoInvalido(usuarioForm, 'phone')) {
+                      <div class="text-danger small mt-1 fw-semibold">
+                        @if (usuarioForm.controls.phone.errors?.['required'] || usuarioForm.controls.phone.errors?.['soloEspacios']) {
+                          El teléfono es obligatorio.
+                        } @else if (usuarioForm.controls.phone.errors?.['pattern']) {
+                          Ingresa un teléfono válido de 7 a 15 dígitos (sin letras ni negativos).
+                        }
+                      </div>
+                    }
                   </div>
+
                   <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-success fw-semibold rounded-3 py-2">
                       {{ editandoUsuarioId() !== null ? 'Actualizar usuario' : 'Guardar usuario' }}
                     </button>
                     @if (editandoUsuarioId() !== null) {
                       <button type="button" class="btn btn-outline-secondary btn-sm rounded-3" (click)="cancelarEdicionUsuario()">
-                        Cancelar
+                        Cancelar edición
                       </button>
                     }
                   </div>
@@ -381,23 +523,20 @@
           </div>
         }
 
-        <!-- ==================== VISTA 3: COMENTARIOS DE CLIENTES ==================== -->
+        <!-- ==================== VISTA 3: COMENTARIOS ==================== -->
         @case ('comentarios') {
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-            <div>
-              <h2 class="fw-bold mb-1">Revisión de Comentarios de Clientes</h2>
-              <p class="text-muted small mb-0">Mensajes y opiniones recibidos desde la API de comentarios</p>
-            </div>
+            <h2 class="fw-bold mb-0">Comentarios de Clientes</h2>
             <div class="d-flex align-items-center gap-2">
               <input
                 type="text"
                 class="form-control form-control-sm rounded-pill px-3"
-                placeholder="Buscar por correo o texto..."
+                placeholder="Buscar comentario..."
                 [value]="filtroComentario()"
                 (input)="actualizarFiltroComentario($event)"
               >
               <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-pill">
-                {{ comentariosFiltrados().length }}
+                Total: {{ comentariosFiltrados().length }}
               </span>
             </div>
           </div>
@@ -418,8 +557,8 @@
                 <table class="table align-middle table-hover mb-0">
                   <thead>
                     <tr class="small text-muted border-bottom">
-                      <th>ID</th>
-                      <th>Autor / Correo</th>
+                      <th>Cliente</th>
+                      <th>Correo</th>
                       <th>Comentario</th>
                       <th class="text-end">Acción</th>
                     </tr>
@@ -427,26 +566,19 @@
                   <tbody>
                     @for (c of comentariosPaginados(); track c.id) {
                       <tr>
-                        <td class="small fw-bold text-muted">#{{ c.id }}</td>
-                        <td class="small">
-                          <div class="fw-semibold">{{ c.name }}</div>
-                          <div class="text-muted">{{ c.email }}</div>
-                        </td>
-                        <td class="small">{{ c.comentario || c.body }}</td>
-                        <td class="text-end text-nowrap">
-                          <button
-                            type="button"
-                            class="btn btn-outline-danger btn-sm rounded-2"
-                            (click)="borrarComentario(c.id)"
-                          >
-                            Quitar
+                        <td class="fw-semibold small">{{ c.name }}</td>
+                        <td class="small text-muted">{{ c.email }}</td>
+                        <td class="small">{{ c.body || c.comentario }}</td>
+                        <td class="text-end">
+                          <button type="button" class="btn btn-outline-danger btn-sm rounded-2" (click)="borrarComentario(c.id)">
+                            Retirar
                           </button>
                         </td>
                       </tr>
                     } @empty {
                       <tr>
                         <td colspan="4" class="text-center text-muted py-4 small">
-                          No hay comentarios que coincidan con tu búsqueda.
+                          No hay comentarios que coincidan.
                         </td>
                       </tr>
                     }
@@ -485,30 +617,30 @@
 
         <!-- ==================== VISTA 4: PEDIDOS Y CONTROL ==================== -->
         @case ('pedidos') {
-          <h2 class="fw-bold mb-4">Pedidos y Control</h2>
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <h2 class="fw-bold mb-0">Pedidos y Control</h2>
+            <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-pill">
+              Sucursal: Cuitláhuac
+            </span>
+          </div>
+
           <div class="row g-4">
-            <div class="col-md-3">
-              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                <span class="text-muted small fw-bold">PRODUCTOS</span>
-                <h3 class="fw-bold mt-2 mb-0">{{ productos().length }}</h3>
+            <div class="col-12 col-md-4">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center">
+                <span class="text-muted small">Total de Productos</span>
+                <h3 class="fw-bold mt-1 mb-0">{{ productos().length }}</h3>
               </div>
             </div>
-            <div class="col-md-3">
-              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                <span class="text-muted small fw-bold">USUARIOS</span>
-                <h3 class="fw-bold mt-2 mb-0">{{ usuarios().length }}</h3>
+            <div class="col-12 col-md-4">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center">
+                <span class="text-muted small">Total de Usuarios</span>
+                <h3 class="fw-bold mt-1 mb-0">{{ usuarios().length }}</h3>
               </div>
             </div>
-            <div class="col-md-3">
-              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                <span class="text-muted small fw-bold">COMENTARIOS</span>
-                <h3 class="fw-bold mt-2 mb-0">{{ comentariosLista().length }}</h3>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                <span class="text-muted small fw-bold">SUCURSAL</span>
-                <h3 class="fw-bold mt-2 mb-0 text-success fs-5">Cuitláhuac · Activa</h3>
+            <div class="col-12 col-md-4">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center">
+                <span class="text-muted small">Comentarios en Revisión</span>
+                <h3 class="fw-bold mt-1 mb-0">{{ comentariosLista().length }}</h3>
               </div>
             </div>
           </div>
