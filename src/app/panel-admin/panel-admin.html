@@ -1,7 +1,83 @@
 <div class="admin-wrapper container-fluid p-0 bg-light">
   <div class="row g-0 min-vh-100">
 
-    <aside class="col-12 col-md-3 col-xl-2 admin-sidebar p-3 text-center text-md-start">
+    <!-- Barra hamburguesa SOLO en celular (< md), pegada arriba al hacer scroll -->
+    <div
+      class="d-md-none sticky-top admin-sidebar text-white px-3 py-2 border-bottom border-secondary border-opacity-25 shadow-sm"
+      style="top: 112px; z-index: 1020;"
+    >
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <span class="fs-5">👩‍🍳</span>
+          <div>
+            <div class="fw-bold small lh-1">Administrador</div>
+            <small class="text-white-50" style="font-size: 0.72rem;">Rebanaditas Admin</small>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="btn btn-outline-light btn-sm rounded-3 px-2 py-1"
+          (click)="alternarMenuMovil()"
+          aria-label="Abrir menú de administración"
+        >
+          {{ menuMovilAbierto() ? '✕' : '☰' }}
+        </button>
+      </div>
+
+      @if (menuMovilAbierto()) {
+        <div class="pt-3 pb-2 mt-2 border-top border-secondary border-opacity-25">
+          <nav class="nav flex-column gap-1">
+            <button
+              type="button"
+              class="nav-link admin-nav-link text-start border-0 bg-transparent py-2"
+              [class.active]="seccionActiva() === 'productos'"
+              (click)="cambiarSeccion('productos')"
+            >
+              🧁 Administrar Productos
+            </button>
+
+            <button
+              type="button"
+              class="nav-link admin-nav-link text-start border-0 bg-transparent py-2"
+              [class.active]="seccionActiva() === 'usuarios'"
+              (click)="cambiarSeccion('usuarios')"
+            >
+              👥 Gestión de Usuarios
+            </button>
+
+            <button
+              type="button"
+              class="nav-link admin-nav-link text-start border-0 bg-transparent py-2"
+              [class.active]="seccionActiva() === 'comentarios'"
+              (click)="cambiarSeccion('comentarios')"
+            >
+              💬 Comentarios Clientes
+            </button>
+
+            <button
+              type="button"
+              class="nav-link admin-nav-link text-start border-0 bg-transparent py-2"
+              [class.active]="seccionActiva() === 'pedidos'"
+              (click)="cambiarSeccion('pedidos')"
+            >
+              📦 Pedidos y Control
+            </button>
+          </nav>
+
+          <div class="pt-2 mt-2 border-top border-secondary border-opacity-25 d-flex flex-column gap-2">
+            <a routerLink="/" class="btn btn-outline-light btn-sm w-100 rounded-pill" (click)="cerrarMenuMovil()">
+              ⬅ Volver a la Tienda
+            </a>
+            <button type="button" (click)="cerrarMenuMovil(); salirAdmin()" class="btn btn-danger btn-sm w-100 rounded-pill">
+              Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Sidebar lateral SOLO en escritorio (>= md) -->
+    <aside class="d-none d-md-block col-md-3 col-xl-2 admin-sidebar p-3 text-center text-md-start">
       
       <div class="sticky-top pt-2" style="top: 15px; z-index: 10;">
         
@@ -547,72 +623,64 @@
             </div>
           }
 
-          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-            @if (cargandoComentarios()) {
-              <div class="text-center py-5">
-                <div class="spinner-border text-danger" role="status"></div>
-              </div>
-            } @else {
-              <div class="table-responsive">
-                <table class="table align-middle table-hover mb-0">
-                  <thead>
-                    <tr class="small text-muted border-bottom">
-                      <th>Cliente</th>
-                      <th>Correo</th>
-                      <th>Comentario</th>
-                      <th class="text-end">Acción</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (c of comentariosPaginados(); track c.id) {
-                      <tr>
-                        <td class="fw-semibold small">{{ c.name }}</td>
-                        <td class="small text-muted">{{ c.email }}</td>
-                        <td class="small">{{ c.body || c.comentario }}</td>
-                        <td class="text-end">
-                          <button type="button" class="btn btn-outline-danger btn-sm rounded-2" (click)="borrarComentario(c.id)">
-                            Retirar
-                          </button>
-                        </td>
-                      </tr>
-                    } @empty {
-                      <tr>
-                        <td colspan="4" class="text-center text-muted py-4 small">
-                          No hay comentarios que coincidan.
-                        </td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-
-              @if (totalPaginasComentarios() > 1) {
-                <nav class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
-                  <span class="small text-muted">
-                    Página {{ paginaComentarios() }} de {{ totalPaginasComentarios() }}
-                  </span>
-                  <div class="btn-group btn-group-sm">
-                    <button
-                      type="button"
-                      class="btn btn-outline-secondary"
-                      [disabled]="paginaComentarios() === 1"
-                      (click)="cambiarPaginaComentarios(paginaComentarios() - 1)"
-                    >
-                      Anterior
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-outline-secondary"
-                      [disabled]="paginaComentarios() === totalPaginasComentarios()"
-                      (click)="cambiarPaginaComentarios(paginaComentarios() + 1)"
-                    >
-                      Siguiente
-                    </button>
+          @if (cargandoComentarios()) {
+            <div class="card border-0 shadow-sm rounded-4 p-5 bg-white text-center">
+              <div class="spinner-border text-danger mx-auto" role="status"></div>
+            </div>
+          } @else {
+            <div class="row g-3">
+              @for (c of comentariosPaginados(); track c.id) {
+                <div class="col-12 col-md-6">
+                  <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white h-100">
+                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                      <div>
+                        <h6 class="fw-bold mb-0 text-dark">{{ c.name }}</h6>
+                        <small class="text-muted d-block text-break">{{ c.email }}</small>
+                      </div>
+                      <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 flex-shrink-0" (click)="borrarComentario(c.id)">
+                        Retirar
+                      </button>
+                    </div>
+                    <p class="small text-secondary mb-0 mt-2" style="line-height: 1.5;">
+                      {{ c.body || c.comentario }}
+                    </p>
                   </div>
-                </nav>
+                </div>
+              } @empty {
+                <div class="col-12">
+                  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center text-muted small">
+                    No hay comentarios que coincidan.
+                  </div>
+                </div>
               }
+            </div>
+
+            @if (totalPaginasComentarios() > 1) {
+              <nav class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                <span class="small text-muted">
+                  Página {{ paginaComentarios() }} de {{ totalPaginasComentarios() }}
+                </span>
+                <div class="btn-group btn-group-sm">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    [disabled]="paginaComentarios() === 1"
+                    (click)="cambiarPaginaComentarios(paginaComentarios() - 1)"
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    [disabled]="paginaComentarios() === totalPaginasComentarios()"
+                    (click)="cambiarPaginaComentarios(paginaComentarios() + 1)"
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              </nav>
             }
-          </div>
+          }
         }
 
         <!-- ==================== VISTA 4: PEDIDOS Y CONTROL ==================== -->
@@ -620,7 +688,7 @@
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <h2 class="fw-bold mb-0">Pedidos y Control</h2>
             <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-pill">
-              Sucursal: Cuitláhuac
+              Productos: {{ productos().length }} · Usuarios: {{ usuarios().length }} · Comentarios: {{ comentariosLista().length }}
             </span>
           </div>
 

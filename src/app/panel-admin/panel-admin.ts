@@ -77,6 +77,7 @@ export class PanelAdminComponent implements OnInit {
   private readonly comentariosService = inject(ComentariosService);
 
   seccionActiva = signal<SeccionAdmin>('productos');
+  menuMovilAbierto = signal<boolean>(false);
 
   // --- ESTADO PRODUCTOS ---
   productos = signal<Producto[]>([]);
@@ -231,8 +232,17 @@ export class PanelAdminComponent implements OnInit {
     return !!(ctrl && ctrl.invalid && (ctrl.dirty || ctrl.touched));
   }
 
+  alternarMenuMovil(): void {
+    this.menuMovilAbierto.update(v => !v);
+  }
+
+  cerrarMenuMovil(): void {
+    this.menuMovilAbierto.set(false);
+  }
+
   cambiarSeccion(seccion: SeccionAdmin): void {
     this.seccionActiva.set(seccion);
+    this.cerrarMenuMovil();
   }
 
   cambiarPaginaProductos(pagina: number): void {
