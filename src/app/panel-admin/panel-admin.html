@@ -1,9 +1,9 @@
 <div class="admin-wrapper container-fluid p-0 bg-light">
   <div class="row g-0 min-vh-100">
 
-    <!-- Barra hamburguesa SOLO en celular (< md), pegada arriba al hacer scroll -->
+    <!-- Barra hamburguesa SOLO en celular (< md), pegada DEBAJO del menú principal -->
     <div
-      class="d-md-none sticky-top admin-sidebar text-white px-3 py-2 border-bottom border-secondary border-opacity-25 shadow-sm"
+      class="d-md-none barra-admin-movil admin-sidebar text-white px-3 py-2 border-bottom border-secondary border-opacity-25 shadow-sm"
     >
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2">
@@ -78,7 +78,7 @@
     <!-- Sidebar lateral SOLO en escritorio (>= md) -->
     <aside class="d-none d-md-block col-md-3 col-xl-2 admin-sidebar p-3 text-center text-md-start">
       
-      <div class="sticky-top pt-2" style="top: 15px; z-index: 10;">
+      <div class="sticky-top pt-2" style="top: 85px; z-index: 10;">
         
         <div class="admin-profile py-3 text-center border-bottom border-secondary border-opacity-25">
           <div class="admin-avatar mx-auto mb-2 shadow-sm">👩‍🍳</div>
@@ -261,7 +261,7 @@
             </div>
 
             <div class="col-12 col-lg-4">
-              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 20px; z-index: 5;">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 85px; z-index: 5;">
                 <h4 class="fw-bold mb-3">
                   {{ editandoProductoId() !== null ? 'Actualizar producto' : 'Nuevo producto' }}
                 </h4>
@@ -476,7 +476,7 @@
             </div>
 
             <div class="col-12 col-lg-4">
-              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 20px; z-index: 5;">
+              <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 85px; z-index: 5;">
                 <h4 class="fw-bold mb-3">
                   {{ editandoUsuarioId() !== null ? 'Editar usuario' : 'Nuevo usuario' }}
                 </h4>

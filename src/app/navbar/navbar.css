@@ -7,19 +7,21 @@
 
 /* Imagen del logo */
 .brand-logo-img {
-  width: 50px !important;
-  height: 50px !important;
+  width: 46px !important;
+  height: 46px !important;
   object-fit: cover;
   border: 2px solid #f8bbd0;
   display: inline-block;
+  flex-shrink: 0;
 }
 
 /* Tipografía cursiva de repostería */
 .brand-text {
   font-family: 'Pacifico', cursive;
-  font-size: 1.8rem;
+  font-size: clamp(1.35rem, 5vw, 1.8rem);
   color: #ff6584;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 /* Enlaces del menú */
