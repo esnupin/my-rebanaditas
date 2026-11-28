@@ -1,6 +1,7 @@
 .admin-wrapper {
   background-color: #f7f3f5;
   min-height: 100vh;
+  overflow-x: clip;
 }
 
 /* Sidebar */
@@ -103,8 +104,19 @@
 
 @media (max-width: 767.98px) {
   .barra-admin-movil {
-    position: sticky;
-    top: 64px;
-    z-index: 1010;
+    position: sticky !important;
+    top: 68px !important;
+    z-index: 1010 !important;
+    width: 100%;
+  }
+
+  .admin-main {
+    padding: 1rem !important;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem 0.4rem !important;
+    font-size: 0.78rem !important;
   }
 }
